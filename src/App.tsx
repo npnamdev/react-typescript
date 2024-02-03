@@ -1,3 +1,4 @@
+import TestCallAPI from "./components/TestCallAPI";
 import TreeExample from "./components/TreeExample";
 import Box from "./components/context/Box";
 import { ThemeContextProvider } from "./components/context/ThemeContext";
@@ -8,7 +9,8 @@ const App = () => {
       {/* <ThemeContextProvider>
         <Box />
       </ThemeContextProvider>  */}
-      <TreeExample/>
+      {/* <TreeExample/> */}
+      <TestCallAPI/>
     </main>
   )
 }

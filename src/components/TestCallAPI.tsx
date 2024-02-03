@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BiCaretDown, BiCaretUp, BiEdit, BiFile, BiFileBlank, BiFolder, BiFolderOpen, BiNote, BiSolidFolder, BiTrashAlt } from 'react-icons/bi';
+import { BiCaretDown, BiCaretUp, BiEdit, BiFile, BiFileBlank, BiFolder, BiFolderOpen, BiSolidFolder, BiTrashAlt } from 'react-icons/bi';
 import axios from 'axios';
 
 interface FileNode {
-    id: number;
+    _id: number;
     name: string;
     type: 'folder' | 'file';
     toggled?: boolean;
@@ -19,9 +19,8 @@ interface TreeNodeProps {
     onDelete: (selectedNode: FileNode) => void;
 }
 
-const TreeNode: React.FC<TreeNodeProps> = ({
-    node, onToggle, onCreate, onUpdate, onDelete}) => {
-    const { name, toggled, type, children } = node;
+const TreeNode: React.FC<TreeNodeProps> = ({ node, onToggle, onCreate, onUpdate, onDelete }) => {
+    const { _id, name, toggled, type, children } = node;
     const [isToggled, setToggled] = useState<boolean>(toggled || false);
     const isFolder: boolean = type === 'folder';
     const isFile: boolean = type === 'file';
@@ -51,13 +50,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({
             <div className=''>
                 <div className='py-[2px] cursor-pointer flex items-center'>
                     <div className='flex items-center gap-1' onClick={handleToggle}>
-                        {isFolder && 
-                            <span> {isToggled ? <BiCaretUp /> : <BiCaretDown />}</span>}
-                            {isFolder 
-                            ? (isToggled ? <BiFolderOpen /> : <BiSolidFolder />)
-                            : <BiFileBlank className='ml-1'/>
-                            }
-                            <span>{name}</span>
+                        {_id != 0  &&
+                            <>{isFolder && <span> {isToggled ? <BiCaretUp /> : <BiCaretDown />}</span>}
+                            {isFolder ? (isToggled ? <BiFolderOpen /> : <BiSolidFolder />) : <BiFileBlank className='ml-1' />}</>
+                        }
+                        <span>{name}</span>
                     </div>
                     <div className='ml-[15px] flex items-center gap-1'>
                         {isFolder && <button onClick={() => handleCreate('file')}> <BiFile /></button>}
@@ -66,11 +63,11 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                         {(isFolder || isFile) && <button onClick={handleDelete}> <BiTrashAlt /></button>}
                     </div>
                 </div>
-                {isToggled && isFolder && (
+                {isToggled && isFolder && children && children.length > 0 && (
                     <div className='ml-[15px]'>
-                        {children?.map((child, index) => (
+                        {children.map((child) => (
                             <TreeNode
-                                key={index}
+                                key={child._id}
                                 node={child}
                                 onToggle={onToggle}
                                 onCreate={onCreate}
@@ -85,16 +82,14 @@ const TreeNode: React.FC<TreeNodeProps> = ({
     );
 };
 
-const TreeExample: React.FC = () => {
+const TestCallAPI: React.FC = () => {
     const [apiData, setApiData] = useState<any>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('https://folder-tree.onrender.com/api/v1/folders');
-                setApiData(response.data[0]);
-                console.log(response.data[0]);
-                
+                setApiData(response.data);                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -104,8 +99,8 @@ const TreeExample: React.FC = () => {
     }, []);
 
     const onToggle = (clickedNode: FileNode, toggled: boolean, isFolder: boolean) => {
-        // console.log(`Node ${clickedNode.name} ${toggled ? 'opened' : 'closed'}`);
-        console.log(`Node1 ${isFolder}`);
+        clickedNode.toggled = toggled; 
+        console.log(`${clickedNode.name} : ${clickedNode._id}`);
     };
 
     const onCreate = (parentNode: FileNode, type: 'file' | 'folder') => {
@@ -120,69 +115,18 @@ const TreeExample: React.FC = () => {
         console.log(`Deleting node: ${selectedNode.name}`);
     };
 
-
-    const [data] = useState<FileNode[]>([
-        {
-            id: 1,
-            name: 'react-typescript-project',
-            type: 'folder',
-            children: [
-                {
-                    id: 2,
-                    name: 'src',
-                    type: 'folder',
-                    children: [
-                        {
-                            id: 3,
-                            name: 'components',
-                            type: 'folder',
-                            children: [
-                                { id: 4, name: 'codeEditor.jsx', type: 'file', content: 'Nội dung file codeEditor.jsx' },
-                                { id: 5, name: 'TableBlock.jsx', type: 'file', content: 'Nội dung file TableBlock.jsx' },
-                            ],
-                        },
-                        {
-                            id: 6,
-                            name: 'styles',
-                            type: 'folder',
-                            children: [
-                                { id: 7, name: 'main.css', type: 'file', content: 'Nội dung file main.css' },
-                                { id: 8, name: 'style.css', type: 'file', content: 'Nội dung file style.css' },
-                            ],
-                        },
-                    ],
-                },
-                { id: 9, name: 'app.js', type: 'file', content: 'Nội dung file app.js' },
-                { id: 10, name: 'index.js', type: 'file', content: 'Nội dung file index.js' },
-                { id: 11, name: '.gitignore', type: 'file', content: 'Nội dung file gitignore' },
-                { id: 12, name: 'package-lock.json', type: 'file', content: 'Nội dung file package-lock.json' },
-                { id: 13, name: 'package.json', type: 'file', content: 'Nội dung file package.json' },
-                { id: 14, name: 'README.md', type: 'file', content: 'Nội dung file README.md' },
-            ],
-        },
-    ]);
-
     return (
-     <>
-        <div>
-        <h2>TestCallAPI</h2>
-        {apiData ? (
-            <pre>{JSON.stringify(apiData, null, 2)}</pre>
-        ) : (
-            <p>Loading data...</p>
-        )}
-    </div>
         <div className='bg-[#241b2f] h-[100vh] text-white py-4 px-2 text-[14px]'>
-            <TreeNode
-                node={apiData}
+            {apiData && <TreeNode
+                node={{ _id: 0, name: 'Root', type: 'folder', toggled: true, children: apiData }}
                 onToggle={onToggle}
                 onCreate={onCreate}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
             />
+        }
         </div>
-     </>
     );
 };
 
-export default TreeExample;
+export default TestCallAPI;
