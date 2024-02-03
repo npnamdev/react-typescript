@@ -48,19 +48,20 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, onToggle, onCreate, onUpdate,
     return (
         <div>
             <div className=''>
-                <div className='py-[2px] cursor-pointer flex items-center'>
-                    <div className='flex items-center gap-1' onClick={handleToggle}>
+                <div className='py-[2px] px-1 cursor-pointer flex items-center hover:text-[#f1c40f] hover:bg-[#40384a] mr-4 rounded' onClick={handleToggle}>
+                    <div className='flex items-center gap-1'>
                         {_id != 0  &&
                             <>{isFolder && <span> {isToggled ? <BiCaretUp /> : <BiCaretDown />}</span>}
                             {isFolder ? (isToggled ? <BiFolderOpen /> : <BiSolidFolder />) : <BiFileBlank className='ml-1' />}</>
                         }
-                        <span>{name}</span>
+                        <span className='line-clamp-1'>{name}</span>
                     </div>
+                    {/* Ẩn tạm thời */}
                     {/* <div className='ml-[15px] flex items-center gap-1'>
-                        {isFolder && <button onClick={() => handleCreate('file')}> <BiFile /></button>}
-                        {isFolder && <button onClick={() => handleCreate('folder')}> <BiFolder /></button>}
-                        {(isFolder || isFile) && <button onClick={handleUpdate}> <BiEdit /></button>}
-                        {(isFolder || isFile) && <button onClick={handleDelete}> <BiTrashAlt /></button>}
+                    <button onClick={(e) => { e.stopPropagation(); handleCreate('file'); }}> <BiFile /></button>
+                    <button onClick={(e) => { e.stopPropagation(); handleCreate('folder'); }}> <BiFolder /></button>
+                    <button onClick={(e) => { e.stopPropagation(); handleUpdate(); }}> <BiEdit /></button>
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(); }}> <BiTrashAlt /></button>
                     </div> */}
                 </div>
                 {isToggled && isFolder && children && children.length > 0 && (
@@ -84,6 +85,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, onToggle, onCreate, onUpdate,
 
 const TestCallAPI: React.FC = () => {
     const [apiData, setApiData] = useState<any>(null);
+    const [content, setContent] = useState<string>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -100,7 +102,10 @@ const TestCallAPI: React.FC = () => {
 
     const onToggle = (clickedNode: FileNode, toggled: boolean, isFolder: boolean) => {
         clickedNode.toggled = toggled; 
-        console.log(`${clickedNode.name} : ${clickedNode._id}`);
+        if(isFolder == false){
+            setContent(clickedNode.content || 'Không có nội dung');
+        }
+        // thêm biên active dựa vào id của file được click để thêm class active
     };
 
     const onCreate = (parentNode: FileNode, type: 'file' | 'folder') => {
@@ -116,15 +121,18 @@ const TestCallAPI: React.FC = () => {
     };
 
     return (
-        <div className='bg-[#241b2f] h-[100vh] text-white py-2 text-[14px]'>
+        <div className='flex'>
+            <div className='w-[270px] bg-[#241b2f] h-[100vh] overflow-y-auto text-white py-2 text-[14px]'>
             {apiData && <TreeNode
                 node={{ _id: 0, name: '', type: 'folder', toggled: true, children: apiData }}
                 onToggle={onToggle}
                 onCreate={onCreate}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
-            />
-        }
+            />}
+
+        </div>
+            <div className='p-4'>{content}</div>
         </div>
     );
 };
