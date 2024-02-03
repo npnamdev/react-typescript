@@ -1,9 +1,9 @@
-interface PersonListProps{
-    names: {
-        first: string,
-        last: string
-    }[]
+import { Name } from "./Person.type"
+
+type PersonListProps = {
+    names: Name[]
 }
+
 const PersonList = (props: PersonListProps) => {
     return(
         <div>

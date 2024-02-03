@@ -8,7 +8,7 @@ const Button = (props: ButtonProps) => {
     return (
         <div>
             <button onClick={event => props.handleClick(event, 1)}>Button</button>
-            <Input value="" handleChange={event => console.log(event)}/>
+            <Input value="nam" handleChange={(event) => console.log(event.target.value)}/>
         </div>
     );
 };
