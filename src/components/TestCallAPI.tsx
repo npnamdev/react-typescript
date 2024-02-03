@@ -56,12 +56,12 @@ const TreeNode: React.FC<TreeNodeProps> = ({ node, onToggle, onCreate, onUpdate,
                         }
                         <span>{name}</span>
                     </div>
-                    <div className='ml-[15px] flex items-center gap-1'>
+                    {/* <div className='ml-[15px] flex items-center gap-1'>
                         {isFolder && <button onClick={() => handleCreate('file')}> <BiFile /></button>}
                         {isFolder && <button onClick={() => handleCreate('folder')}> <BiFolder /></button>}
                         {(isFolder || isFile) && <button onClick={handleUpdate}> <BiEdit /></button>}
                         {(isFolder || isFile) && <button onClick={handleDelete}> <BiTrashAlt /></button>}
-                    </div>
+                    </div> */}
                 </div>
                 {isToggled && isFolder && children && children.length > 0 && (
                     <div className='ml-[15px]'>
@@ -116,9 +116,9 @@ const TestCallAPI: React.FC = () => {
     };
 
     return (
-        <div className='bg-[#241b2f] h-[100vh] text-white py-4 px-2 text-[14px]'>
+        <div className='bg-[#241b2f] h-[100vh] text-white py-2 text-[14px]'>
             {apiData && <TreeNode
-                node={{ _id: 0, name: 'Root', type: 'folder', toggled: true, children: apiData }}
+                node={{ _id: 0, name: '', type: 'folder', toggled: true, children: apiData }}
                 onToggle={onToggle}
                 onCreate={onCreate}
                 onUpdate={onUpdate}
